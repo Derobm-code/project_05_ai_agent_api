@@ -1,0 +1,49 @@
+Python Basics
+
+Python is a high-level, interpreted, dynamically typed language known for readable syntax and rapid development. Core building blocks include variables (no explicit type declaration needed), and the standard data types: int, float, str, bool, list, tuple, dict, and set. Understanding mutability matters — lists, dicts, and sets are mutable, while tuples and strings are immutable, which affects how they behave when passed around or used as dictionary keys.
+
+Control flow relies on if/elif/else, for loops (which iterate over iterables rather than counting like C-style loops), and while loops. Python's indentation-based blocks (instead of braces) enforce readable code structure.
+
+Other essentials: string formatting (f-strings are the modern standard, e.g. f"{name} is {age}"), list comprehensions for concise iteration ([x**2 for x in range(10)]), and slicing (my_list[1:5:2]) for extracting subsequences. The None type represents absence of a value, distinct from 0 or False.
+
+Modules and packages let you organize code across files with import, and the standard library (e.g. os, math, json, datetime) covers most everyday needs without external dependencies. Virtual environments (venv) isolate project dependencies, which becomes essential once you start installing third-party packages with pip.
+
+Functions
+
+Functions are defined with def, can take positional and keyword arguments, and support default values (def greet(name, greeting="Hello")). Python also allows variable-length arguments via *args (positional) and **kwargs (keyword), useful for flexible APIs and wrapper functions.
+
+Scope follows the LEGB rule (Local, Enclosing, Global, Built-in) — a variable inside a function shadows outer variables unless you explicitly use global or nonlocal. Functions are first-class objects: they can be assigned to variables, passed as arguments, returned from other functions, and stored in data structures, which underpins Python's support for functional programming patterns.
+
+Lambda expressions provide anonymous, single-expression functions (lambda x: x * 2), commonly used with map, filter, and sorted for short, throwaway logic. Closures occur when a nested function captures variables from its enclosing scope, enabling patterns like function factories.
+
+Type hints (def add(a: int, b: int) -> int) improve readability and enable static analysis tools like mypy, though Python remains dynamically typed at runtime — hints are not enforced automatically. Docstrings (triple-quoted strings right after the def line) document a function's purpose and are accessible via help() or __doc__. Recursion, generator functions (using yield instead of return), and higher-order functions round out the practical toolkit for writing expressive, reusable code.
+
+Object-Oriented Programming
+
+OOP in Python centers on classes, which bundle data (attributes) and behavior (methods) together. A class is defined with class ClassName:, and instances are created by calling the class like a function. The __init__ method acts as a constructor, initializing instance attributes when an object is created; self refers to the instance itself and must be the first parameter of instance methods.
+
+The four core pillars are encapsulation (bundling data with methods, with convention-based privacy using underscores like _protected or __private), inheritance (a subclass extends a parent class via class Child(Parent):, reusing and overriding behavior), polymorphism (different classes implementing the same method name behave differently, enabling uniform interfaces), and abstraction (hiding implementation details behind simpler interfaces, often via abstract base classes from the abc module).
+
+Special/"dunder" methods let objects integrate with Python's built-in behavior — __str__ and __repr__ control string representation, __eq__ and __lt__ control comparisons, __len__ supports len(), and __getitem__ enables indexing. Class methods (@classmethod) operate on the class itself rather than an instance, while static methods (@staticmethod) are utility functions grouped inside a class without needing self or cls.
+
+Composition (building objects from other objects) is often favored over deep inheritance hierarchies for flexibility. Python also supports multiple inheritance, resolved via the Method Resolution Order (MRO), and dataclasses (@dataclass) reduce boilerplate for simple data-holding classes.
+
+Decorators
+
+A decorator is a function that wraps another function or class to extend or modify its behavior without changing its source code. The @decorator_name syntax placed above a function definition is shorthand for func = decorator_name(func). Decorators are a direct application of the fact that functions are first-class objects — they take a function as input and return a new function, typically one that calls the original inside a wrapper.
+
+Common built-in decorators include @staticmethod and @classmethod for altering how a method is called, and @property for turning a method into a computed attribute accessible without parentheses, often paired with a setter (@x.setter) for controlled attribute assignment.
+
+Writing custom decorators typically involves a wrapper function using *args and **kwargs to accept any signature, and functools.wraps to preserve the original function's name and docstring (important for debugging and introspection). Decorators are widely used for cross-cutting concerns: logging, timing execution, caching results (functools.lru_cache), enforcing access control, retry logic, and input validation.
+
+Decorators can also take arguments themselves, which requires an extra layer of nesting — a function that returns a decorator, which returns a wrapper. Class-based decorators (implementing __call__) offer an alternative when you need to maintain state across calls. Stacking multiple decorators applies them in order from closest to the function outward.
+
+Exception Handling
+
+Python uses a try/except block to catch and handle runtime errors gracefully instead of crashing. Code that might fail goes in try, and specific exception types are caught in except blocks — catching specific exceptions (except ValueError:) rather than a bare except: is best practice, since broad catches can silently mask bugs.
+
+The else clause runs only if no exception occurred, useful for code that should execute only on success, while finally runs regardless of whether an exception occurred, commonly used for cleanup like closing files or releasing resources (though with statements often handle this more cleanly via context managers).
+
+Built-in exceptions form a hierarchy rooted at BaseException, with Exception as the parent of most catchable errors — common ones include ValueError, TypeError, KeyError, IndexError, FileNotFoundError, and ZeroDivisionError. Custom exceptions are created by subclassing Exception, allowing domain-specific error types that carry meaningful names and additional context.
+
+The raise statement triggers exceptions manually, and raise ... from ... preserves the original exception's context when re-raising a different one, aiding debugging. Exception chaining happens automatically when a new exception is raised inside an except block. Context managers (with statements, backed by __enter__/__exit__ or contextlib.contextmanager) are the idiomatic way to guarantee cleanup, replacing many manual try/finally patterns for resource management like file handles, network connections, and locks.

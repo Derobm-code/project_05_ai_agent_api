@@ -1,0 +1,3 @@
+Databases are systems used to store, organize, and retrieve data.
+Relational databases use tables and SQL, while NoSQL databases use
+other data models such as documents, key-value pairs, or graphs.

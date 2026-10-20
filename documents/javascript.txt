@@ -1,0 +1,1 @@
+JavaScript is a high-level, dynamic programming language that powers interactivity on the web.  It runs in browsers and on servers (via Node.js), enabling everything from simple animations to full-stack applications, and has become a leading language for building AI-powered, real-time user experiences.

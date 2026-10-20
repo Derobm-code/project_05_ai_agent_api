@@ -1,0 +1,7 @@
+ollama
+sentence-transformers
+numpy
+pydantic
+fastapi
+uvicorn[standard]
+httpx

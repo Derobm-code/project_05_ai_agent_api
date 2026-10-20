@@ -1,0 +1,1 @@
+AI (Artificial Intelligence) is the field of computer science focused on creating systems capable of performing tasks that typically require human intelligence, such as learning, reasoning, and decision-making. Modern AI, powered by machine learning and large models, is transforming industries and is increasingly accessible through web-based tools and real-time applications.

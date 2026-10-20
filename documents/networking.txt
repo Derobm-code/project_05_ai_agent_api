@@ -1,0 +1,1 @@
+Networking refers to the interconnection of computers and devices to share resources and exchange data. It underpins the internet, relying on protocols and infrastructure to enable communication across local and global scales, and is increasingly intertwined with AI both for automating network operations and for supporting high-performance AI workloads
