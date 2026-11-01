@@ -37,7 +37,7 @@ I also added automated tests to check that different parts of the application wo
 ## Project Structure
 
 ```text
-project-04-ai-agent-api/
+project-05-ai-agent-api/
 ├── api.py
 ├── main.py
 ├── tools.py
