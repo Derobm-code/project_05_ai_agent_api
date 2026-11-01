@@ -62,8 +62,8 @@ project-04-ai-agent-api/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Derobm-code/project_04_ai_agent_api.git
-cd project_04_ai_agent_api
+git clone https://github.com/Derobm-code/project_05_ai_agent_api.git
+cd project_05_ai_agent_api
 ```
 
 ### 2. Make sure Docker and Ollama are installed
@@ -111,6 +111,14 @@ Expected response:
 ```
 
 You can also test the agent endpoint through the API documentation.
+
+## Frontend Application
+
+A React and TypeScript web interface is available for
+interacting with this AI Agent API.
+
+**Frontend source code:**
+[Project 6 — AI Agent Web Application](https://github.com/Derobm-code/project_06_ai_agent_web_app)
 
 ### 7. Stop the application
 
