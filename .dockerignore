@@ -1,3 +1,4 @@
+
 .git/
 .venv/
 venv/
@@ -18,3 +19,8 @@ evaluate_agent.py
 .cache/
 *.gguf
 *.safetensors
+
+node_modules/
+dist/
+build/
+*.vhdx

@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HF_HOME=/home/app/.cache/huggingface
 
-WORKDIR / app
+WORKDIR /app
 
 # Runtime library needed by common numberical/ML packages
 RUN apt-get update \
@@ -14,7 +14,10 @@ RUN apt-get update \
 # Install dependencies separately to improve build caching
 COPY requirements.txt .
 
+# Install CPU-only PyTorch before sentence-transformers
 RUN python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir torch \
+       --index-url https://download.pytorch.org/whl/cpu \
     && python -m pip install --no-cache-dir -r requirements.txt
 
 # Run the application as a non-root user
