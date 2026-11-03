@@ -2,9 +2,13 @@
 import hashlib
 import os
 import time
-
+import logging
 import httpx
 from fastapi import HTTPException, Request
+
+
+logger = logging.getLogger(__name__)
+
 
 LIMIT = 10
 WINDOW_SECONDS = 3600
@@ -60,7 +64,8 @@ def enforce_rate_limit(request: Request) -> None:
         payload = response.json()
 
         if payload.get("error"):
-            raise ValueError(payload["error"])
+            logger.error("Upstash Redis error: %s", payload["error"])
+            raise ValueError("Redis command failed")
 
         count = int(payload["result"])
 

@@ -65,11 +65,11 @@ def chat_with_agent(
 
         if provider == "groq":
             from groq_agent import run_groq_agent
-            answer, trace = run_groq_agent(request.message)
+            answer, trace = run_groq_agent(payload.message)
 
         elif provider == "ollama":
             from main import run_agent
-            answer, trace = run_agent(request.message)
+            answer, trace = run_agent(payload.message)
 
         else: 
             raise ValueError(
@@ -79,6 +79,7 @@ def chat_with_agent(
         return AgentResponse(answer=answer, trace=trace)
 
     except Exception as exc:
+        logger.exception("Chat agent execution failed")
         # Avoid exposing internal exception details to API clients.
         raise HTTPException(
             status_code=500,
