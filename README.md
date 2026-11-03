@@ -136,6 +136,91 @@ To run the tests in a Python environment with the required dependencies installe
 python -m pytest tests/
 ```
 
+## Cloud Deployment
+
+This project is a Python FastAPI AI agent supporting tool calling, retrieval-augmented generation (RAG), and structured execution traces.
+
+### Live API
+
+- **API:** https://project-05-ai-agent-api.vercel.app
+- **Health:** https://project-05-ai-agent-api.vercel.app/health
+- **Interactive documentation:** https://project-05-ai-agent-api.vercel.app/docs
+- **Frontend:** https://project-06-ai-agent-web-app-murex.vercel.app
+
+### Architecture
+
+The project supports two execution modes:
+
+| Feature | Local mode | Cloud mode |
+|---|---|---|
+| AI inference | Ollama | GroqCloud |
+| Backend | FastAPI in Docker | FastAPI on Vercel |
+| Knowledge retrieval | Sentence Transformers semantic search | TF-IDF retrieval |
+| Tools | Python functions | Python functions |
+| Execution traces | Supported | Supported |
+
+### Agent Capabilities
+
+- Natural-language chat
+- Function calling and argument validation with Pydantic
+- Percentage, addition, subtraction, and multiplication tools
+- Percentage-reduction calculations
+- Current date and time lookup
+- Knowledge-base retrieval from text documents
+- Structured tool execution traces
+- Maximum iteration and tool execution limits
+
+### API Example
+
+**POST `/chat`**
+
+Request:
+
+```json
+{
+  "message": "Calculate 15% of 240"
+}
+```
+
+Example response:
+
+```json
+{
+  "answer": "15% of 240 is 36.",
+  "trace": [
+    {
+      "step": 1,
+      "tool": "calculate_percentage",
+      "arguments": {
+        "percentage": 15,
+        "value": 240
+      },
+      "result": 36.0
+    }
+  ]
+}
+```
+
+### Environment Variables
+
+Cloud deployment uses:
+
+- `AI_PROVIDER=groq`
+- `GROQ_API_KEY` — private Groq API credential
+- `FRONTEND_URL` — permitted frontend origin
+- `UPSTASH_REDIS_REST_URL` — rate-limiting database URL
+- `UPSTASH_REDIS_REST_TOKEN` — private database token
+
+Do not commit API keys or tokens to GitHub.
+
+### Deployment Notes
+
+The production API runs on Vercel using hosted Groq inference. It does not require visitors to install Ollama or Docker.
+
+The local version remains available for experimenting with Ollama and semantic RAG.
+
+Cloud services have free-tier quotas and may enforce request limits. Public API access is subject to server-side rate limiting.
+
 ## What I Learned
 
 This project helped me understand:

@@ -4,7 +4,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-INDEX_PATH = Path(__file__).resolve().parent / "rag_index.json"
+INDEX_PATH = Path(__file__).resolve().parent / "cloud_rag_index.json"
 
 
 def tokenize(text: str) -> list[str]:

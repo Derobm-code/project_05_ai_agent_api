@@ -2,7 +2,8 @@ import os
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
-
+from fastapi import Request
+from rate_limit import enforce_rate_limit
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -48,7 +49,11 @@ def health_check():
     return {"status": "ok"}
 
 @app.post("/chat", response_model=AgentResponse)
-def chat_with_agent(request: AgentRequest) -> AgentResponse:
+def chat_with_agent(
+    payload: AgentRequest,
+    request: Request,
+) -> AgentResponse:
+    enforce_rate_limit(request)
     """Send a question to the agent and return its answer and trace."""
 
     try:

@@ -6,6 +6,7 @@ dependencies = [
     "fastapi",
     "pydantic",
     "groq",
+    "httpx",
 ]
 
 [tool.vercel]
