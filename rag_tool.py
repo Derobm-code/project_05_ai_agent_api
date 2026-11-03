@@ -154,4 +154,4 @@ def search_knowledge_base(query: str) -> str:
             f"Content: {result['text']}"
         )
 
-    return "n\n".join(output)
+    return "\n\n".join(output)

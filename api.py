@@ -1,7 +1,7 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
-
-from main import run_agent
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,7 +13,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", os.getenv("FRONTEND_URL", "http://localhost:5173"),],
     allow_credentials=False,
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
@@ -51,12 +51,22 @@ def chat_with_agent(request: AgentRequest) -> AgentResponse:
     """Send a question to the agent and return its answer and trace."""
 
     try:
-        answer, trace = run_agent(request.message)
+        provider = os.getenv("AI_PROVIDER", "ollama").lower()
 
-        return AgentResponse(
-            answer=answer,
-            trace=trace,
-        )
+        if provider == "groq":
+            from groq_agent import run_groq_agent
+            answer, trace = run_groq_agent(request.message)
+
+        elif provider == "ollama":
+            from main import run_agent
+            answer, trace = run_agent(request.message)
+
+        else: 
+            raise ValueError(
+                f"Unsupported AI provider: {provider}"
+            )
+
+        return AgentResponse(answer=answer, trace=trace)
 
     except Exception as exc:
         # Avoid exposing internal exception details to API clients.
