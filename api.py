@@ -6,6 +6,10 @@ from fastapi import Request
 from rate_limit import enforce_rate_limit
 from fastapi.middleware.cors import CORSMiddleware
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="Local AI Agent API",
     description="An API for a tool-calling AI agent with RAG.",
