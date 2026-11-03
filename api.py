@@ -13,7 +13,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", os.getenv("FRONTEND_URL", "http://localhost:5173"),],
+    allow_origins=["http://localhost:5173", "https://project-06-ai-agent-web-app-murex.vercel.app",
+    "https://project-06-ai-agent-web-o19vfvw37-deraras-projects.vercel.app", os.getenv("FRONTEND_URL", "http://localhost:5173"),],
     allow_credentials=False,
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
