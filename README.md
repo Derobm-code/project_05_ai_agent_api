@@ -1,188 +1,80 @@
-# Project 05 — AI Agent API with FastAPI and Docker
+# AI Agent API — FastAPI, Groq, Tools & RAG
 
-## About This Project
+A deployed Python AI-agent backend that combines LLM reasoning, structured tool execution, knowledge-base retrieval, and API rate limiting. Built with FastAPI and designed to support both local development and a lightweight serverless cloud deployment.
 
-This is my fourth AI engineering project.
+**Live API:** https://project-05-ai-agent-api.vercel.app  
+**Interactive API documentation:** https://project-05-ai-agent-api.vercel.app/docs  
+**Live frontend:** https://project-06-ai-agent-web-app-murex.vercel.app
 
-In my previous projects, I learned how to build a RAG system and an AI agent that can use tools. In this project, I wanted to take things further by turning my AI agent into an API that can run inside Docker.
+## Features
 
-The goal was to learn how to make an AI application accessible through HTTP requests instead of running everything directly from the terminal.
+- **Agentic tool calling:** The model can select and execute Python functions and return a step-by-step execution trace.
+- **Seven tools:** `calculate_percentage`, `add_numbers`, `multiply_numbers`, `subtract_numbers`, `calculate_remaining_after_reduction`, `get_current_datetime`, and `search_knowledge_base`.
+- **Retrieval-augmented generation (RAG):** Retrieves relevant text from a small curated knowledge base to support answers.
+- **Two execution modes:** Groq-hosted inference for the deployed API, and an Ollama-based local workflow.
+- **Request validation:** FastAPI and Pydantic validate incoming requests and outgoing responses.
+- **Rate limiting:** Upstash Redis-backed request counters help protect the hosted model quota. The current configuration allows 10 requests per IP per hourly window.
+- **CORS:** Allows the configured frontend to communicate with the API.
 
-## What I Built
-
-I built an AI agent API using Python, FastAPI, Ollama, and Docker.
-
-The application can:
-
-- Receive requests through a REST API.
-- Use an AI agent to process questions.
-- Call Python tools to perform calculations.
-- Search a local knowledge base using RAG.
-- Return answers through API responses.
-- Run inside a Docker container.
-
-I also added automated tests to check that different parts of the application work correctly.
-
-## Technologies Used
-
-- **Python** — Main programming language
-- **FastAPI** — Building the API
-- **Ollama** — Running local language models
-- **Sentence Transformers** — Creating text embeddings
-- **Docker** — Containerizing the application
-- **Docker Compose** — Running the application container
-- **Pytest** — Testing the code
-- **Git and GitHub** — Version control
-
-## Project Structure
+## Architecture
 
 ```text
-project-05-ai-agent-api/
-├── api.py
-├── main.py
-├── tools.py
-├── tool_models.py
-├── tool_config.py
-├── rag_tool.py
-├── embeddings.py
-├── chunking.py
-├── similarity.py
-├── documents/
-├── static/
-├── tests/
-├── Dockerfile
-├── compose.yaml
-├── requirements.txt
-├── .dockerignore
-└── README.md
+React + TypeScript frontend (Vercel)
+             |
+             | POST /chat
+             v
+      FastAPI backend (Vercel)
+             |
+       Upstash Redis
+       rate-limit check
+             |
+             v
+        AI provider
+        /         \
+  Groq (cloud)  Ollama (local)
+        |             |
+        +------ Tool calling ------+
+                     |
+             Python utility tools
+                     |
+            Knowledge-base search
+                     |
+        Answer + tool execution trace
+                     |
+                     v
+               React frontend
 ```
 
-## How to Run the Project
+### Cloud versus local RAG
 
-### 1. Clone the repository
+| Mode | Inference | Retrieval |
+| --- | --- | --- |
+| Cloud / Vercel | Groq (`openai/gpt-oss-20b`, subject to provider availability) | Lightweight TF-IDF search over `cloud_rag_index.json` |
+| Local development | Ollama | Sentence Transformers embeddings and semantic retrieval |
 
-```bash
-git clone https://github.com/Derobm-code/project_05_ai_agent_api.git
-cd project_05_ai_agent_api
-```
+The cloud index stores document text chunks without the unused embedding arrays. This avoids deploying the heavy local embedding stack to the serverless environment. The cloud retrieval path is **TF-IDF**, not vector similarity search.
 
-### 2. Make sure Docker and Ollama are installed
+## API
 
-This project uses Ollama to run the AI model locally.
+### `GET /health`
 
-Ollama needs to be running, and the model used by the agent needs to be available.
+Health-check endpoint.
 
-The Docker configuration also needs to allow the container to connect to Ollama on the host computer.
-
-### 3. Build the Docker image
-
-```bash
-docker compose build
-```
-
-The first build might take some time because Python and the AI libraries need to be installed.
-
-### 4. Start the application
-
-```bash
-docker compose up -d
-```
-
-### 5. Open the API documentation
-
-Visit:
-
-http://127.0.0.1:8000/docs
-
-FastAPI provides an interactive page where the API endpoints can be tested.
-
-### 6. Test the health endpoint
-
-Open:
-
-http://127.0.0.1:8000/health
-
-Expected response:
+Example response:
 
 ```json
-{
-  "status": "ok"
-}
+{"status": "ok"}
 ```
 
-You can also test the agent endpoint through the API documentation.
-
-## Frontend Application
-
-A React and TypeScript web interface is available for
-interacting with this AI Agent API.
-
-**Frontend source code:**
-[Project 6 — AI Agent Web Application](https://github.com/Derobm-code/project_06_ai_agent_web_app)
-
-### 7. Stop the application
-
-```bash
-docker compose down
-```
-
-## Testing
-
-I wrote tests for different parts of the application, including the API, agent logic, tools, and RAG functionality.
-
-To run the tests in a Python environment with the required dependencies installed:
-
-```bash
-python -m pytest tests/
-```
-
-## Cloud Deployment
-
-This project is a Python FastAPI AI agent supporting tool calling, retrieval-augmented generation (RAG), and structured execution traces.
-
-### Live API
-
-- **API:** https://project-05-ai-agent-api.vercel.app
-- **Health:** https://project-05-ai-agent-api.vercel.app/health
-- **Interactive documentation:** https://project-05-ai-agent-api.vercel.app/docs
-- **Frontend:** https://project-06-ai-agent-web-app-murex.vercel.app
-
-### Architecture
-
-The project supports two execution modes:
-
-| Feature | Local mode | Cloud mode |
-|---|---|---|
-| AI inference | Ollama | GroqCloud |
-| Backend | FastAPI in Docker | FastAPI on Vercel |
-| Knowledge retrieval | Sentence Transformers semantic search | TF-IDF retrieval |
-| Tools | Python functions | Python functions |
-| Execution traces | Supported | Supported |
-
-### Agent Capabilities
-
-- Natural-language chat
-- Function calling and argument validation with Pydantic
-- Percentage, addition, subtraction, and multiplication tools
-- Percentage-reduction calculations
-- Current date and time lookup
-- Knowledge-base retrieval from text documents
-- Structured tool execution traces
-- Maximum iteration and tool execution limits
-
-### API Example
-
-**POST `/chat`**
+### `POST /chat`
 
 Request:
 
 ```json
-{
-  "message": "Calculate 15% of 240"
-}
+{"message": "Calculate 15% of 240"}
 ```
 
-Example response:
+Example response (trace shape illustrated):
 
 ```json
 {
@@ -191,68 +83,75 @@ Example response:
     {
       "step": 1,
       "tool": "calculate_percentage",
-      "arguments": {
-        "percentage": 15,
-        "value": 240
-      },
-      "result": 36.0
+      "arguments": {"percentage": 15, "value": 240},
+      "result": 36
     }
   ]
 }
 ```
 
-### Environment Variables
+Try the endpoint interactively at [Swagger UI](https://project-05-ai-agent-api.vercel.app/docs). Actual wording and trace details may vary by request.
 
-Cloud deployment uses:
+## Local setup
 
-- `AI_PROVIDER=groq`
-- `GROQ_API_KEY` — private Groq API credential
-- `FRONTEND_URL` — permitted frontend origin
-- `UPSTASH_REDIS_REST_URL` — rate-limiting database URL
-- `UPSTASH_REDIS_REST_TOKEN` — private database token
+Prerequisites: Python 3.12+ and an available AI provider. For the local Ollama workflow, install and run Ollama with the model configured in the project.
 
-Do not commit API keys or tokens to GitHub.
+1. Clone this repository and open the backend directory.
+2. Create and activate a Python virtual environment:
 
-### Deployment Notes
+   ```powershell
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   ```
 
-The production API runs on Vercel using hosted Groq inference. It does not require visitors to install Ollama or Docker.
+3. Install the dependencies required for the mode you intend to run. For the lightweight cloud-compatible mode, install the packages declared in `pyproject.toml`:
 
-The local version remains available for experimenting with Ollama and semantic RAG.
+   ```powershell
+   pip install .
+   ```
 
-Cloud services have free-tier quotas and may enforce request limits. Public API access is subject to server-side rate limiting.
+4. Configure environment variables (see below).
+5. Start the API:
 
-## What I Learned
+   ```powershell
+   uvicorn api:app --reload
+   ```
 
-This project helped me understand:
+6. Visit `http://127.0.0.1:8000/docs`.
 
-- How to build API endpoints with FastAPI.
-- How to connect an AI agent to an API.
-- How to send requests and receive responses.
-- How Docker images and containers work.
-- How to write a Dockerfile and Docker Compose configuration.
-- How to test an API.
-- How to debug build errors and container issues.
-- How to push a complete project to GitHub.
+**Note:** The local Ollama/semantic-RAG workflow also needs its original local model and embedding dependencies; the minimal cloud dependency set does not install those heavy packages.
 
-One challenge I faced was building the Docker image because some AI libraries were large and took time to install. I also had to fix a few errors in the Dockerfile.
+## Environment variables
 
-After fixing those issues, I managed to build the image, start the container, and test the API successfully.
+| Variable | Required for | Description |
+| --- | --- | --- |
+| `AI_PROVIDER` | Both | `groq` for cloud or `ollama` for local mode |
+| `GROQ_API_KEY` | Groq mode | Secret API key for hosted inference |
+| `UPSTASH_REDIS_REST_URL` | Deployed rate-limited API | Upstash Redis REST endpoint |
+| `UPSTASH_REDIS_REST_TOKEN` | Deployed rate-limited API | Secret Upstash REST token |
+| `FRONTEND_URL` | CORS configuration, where used | Allowed frontend origin |
 
-## Future Improvements
+Store secrets in Vercel Environment Variables for production. Never commit `.env` files, tokens, or API keys. If the rate limiter is enabled but its Upstash credentials are absent or unusable, `/chat` may return HTTP 503.
 
-Some things I would like to improve later:
+## Deployment
 
-- Build a better user interface.
-- Add more tools to the agent.
-- Improve error handling and logging.
-- Add more API tests.
-- Make the Docker image smaller.
-- Explore deployment options.
+The backend is deployed independently to Vercel using `api:app` as the FastAPI entry point. The cloud dependency list is defined in `pyproject.toml` and includes FastAPI, Pydantic, Groq, and HTTPX.
 
-## Final Thoughts
+Deployment checklist:
 
-This project helped me move from building AI scripts to building an AI application that can be accessed through an API and run in a container.
+1. Deploy the backend repository to Vercel.
+2. Set `AI_PROVIDER=groq`, `GROQ_API_KEY`, and both Upstash REST environment variables.
+3. Configure the frontend origin for CORS.
+4. Verify `/health`, `/docs`, a calculation tool call, and a knowledge-base retrieval request.
+5. Verify the rate limiter returns HTTP 429 after the configured request threshold.
 
-I am learning AI engineering by building projects step by step, understanding the errors, and improving my code as I go.
+## Security and limitations
 
-This is part of my journey to becoming a better Python and AI engineer.
+- The IP-based limiter is a basic quota safeguard, not complete protection against automated abuse.
+- Public requests are subject to Groq and Upstash service limits.
+- The bundled cloud RAG index contains document text. Review it before committing it to a public repository.
+- Generated answers may be imperfect; tool traces make supported calculations and retrieval steps easier to inspect.
+
+## Related project
+
+**AI Agent Web App:** https://project-06-ai-agent-web-app-murex.vercel.app
